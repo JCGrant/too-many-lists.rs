@@ -4,7 +4,9 @@ pub struct List {
     head: Link,
 }
 
+#[derive(Default)]
 enum Link {
+    #[default]
     Empty,
     More(Box<Node>),
 }
@@ -22,12 +24,12 @@ impl List {
     pub fn push(&mut self, elem: i32) {
         self.head = Link::More(Box::new(Node {
             elem,
-            next: mem::replace(&mut self.head, Link::Empty),
+            next: mem::take(&mut self.head),
         }));
     }
 
     pub fn pop(&mut self) -> Option<i32> {
-        match mem::replace(&mut self.head, Link::Empty) {
+        match mem::take(&mut self.head) {
             Link::Empty => None,
             Link::More(node) => {
                 self.head = node.next;
@@ -40,9 +42,9 @@ impl List {
 // Implement Drop manually to avoid a stack overflow via recursively dropping
 impl Drop for List {
     fn drop(&mut self) {
-        let mut cur_link = mem::replace(&mut self.head, Link::Empty);
+        let mut cur_link = mem::take(&mut self.head);
         while let Link::More(mut boxed_node) = cur_link {
-            cur_link = mem::replace(&mut boxed_node.next, Link::Empty);
+            cur_link = mem::take(&mut boxed_node.next);
         }
     }
 }

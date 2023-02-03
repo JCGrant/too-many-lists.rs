@@ -39,6 +39,12 @@ impl List {
     }
 }
 
+impl Default for List {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // Implement Drop manually to avoid a stack overflow via recursively dropping
 impl Drop for List {
     fn drop(&mut self) {

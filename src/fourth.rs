@@ -17,7 +17,7 @@ struct Node<T> {
 impl<T> Node<T> {
     fn new(elem: T) -> Rc<RefCell<Self>> {
         Rc::new(RefCell::new(Node {
-            elem: elem,
+            elem,
             prev: None,
             next: None,
         }))
@@ -117,8 +117,19 @@ impl<T> List<T> {
             .as_ref()
             .map(|node| RefMut::map(node.borrow_mut(), |node| &mut node.elem))
     }
+}
 
-    pub fn into_iter(self) -> IntoIter<T> {
+impl<T> Default for List<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<T> IntoIterator for List<T> {
+    type IntoIter = IntoIter<T>;
+    type Item = T;
+
+    fn into_iter(self) -> Self::IntoIter {
         IntoIter(self)
     }
 }

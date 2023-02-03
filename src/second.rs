@@ -46,10 +46,6 @@ impl<T> List<T> {
         self.head.as_mut().map(|node| &mut node.elem)
     }
 
-    pub fn into_iter(self) -> IntoIter<T> {
-        IntoIter(self)
-    }
-
     pub fn iter(&self) -> Iter<'_, T> {
         Iter {
             next: self.head.as_deref(),
@@ -63,6 +59,12 @@ impl<T> List<T> {
     }
 }
 
+impl<T> Default for List<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // Implement Drop manually to avoid a stack overflow via recursively dropping
 impl<T> Drop for List<T> {
     fn drop(&mut self) {
@@ -70,6 +72,15 @@ impl<T> Drop for List<T> {
         while let Some(mut boxed_node) = cur_link {
             cur_link = boxed_node.next.take();
         }
+    }
+}
+
+impl<T> IntoIterator for List<T> {
+    type IntoIter = IntoIter<T>;
+    type Item = T;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter(self)
     }
 }
 

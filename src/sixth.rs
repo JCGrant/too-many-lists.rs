@@ -40,13 +40,10 @@ impl<T> LinkedList<T> {
                 (*new.as_ptr()).back = Some(old);
             } else {
                 // If there's no front, then we're the empty list and need
-                // to set the back too. Also here's some integrity checks
-                // for testing, in case we mess up.
-                debug_assert!(self.back.is_none());
-                debug_assert!(self.front.is_none());
-                debug_assert!(self.len == 0);
+                // to set the back too.
                 self.back = Some(new);
             }
+            // These things always happen!
             self.front = Some(new);
             self.len += 1;
         }
@@ -55,9 +52,6 @@ impl<T> LinkedList<T> {
     pub fn pop_front(&mut self) -> Option<T> {
         unsafe {
             // Only have to do stuff if there is a front node to pop.
-            // Note that we don't need to mess around with `take` anymore
-            // because everything is Copy and there are no dtors that will
-            // run if we mess up... right? :) Riiiight? :)))
             self.front.map(|node| {
                 // Bring the Box back to life so we can move out its value and
                 // Drop it (Box continues to magically understand this for us).
@@ -71,7 +65,6 @@ impl<T> LinkedList<T> {
                     (*new.as_ptr()).front = None;
                 } else {
                     // If the front is now null, then this list is now empty!
-                    debug_assert!(self.len == 1);
                     self.back = None;
                 }
 
